@@ -14,4 +14,7 @@ router.get('/:id', controller.getImage);
 // upload edit
 router.put('/:id', upload.single('image'), controller.updateImage);
 
+// fetch images for a doctor
+router.get('/practitioner/:id', controller.getImagesForDoctor);
+
 module.exports = router;

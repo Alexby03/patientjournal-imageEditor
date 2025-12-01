@@ -31,7 +31,7 @@ exports.uploadImage = async (req, res) => {
 
         const sql = `
             INSERT INTO images 
-            (image_id, filename, mime_type, image_data, thumb_data, width, height, patient_id, patient_name, practitioner_id, creation_date)
+            (image_id, filename, mime_type, image_data, width, height, thumb_data, patient_id, patient_name, practitioner_id, creation_date)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         `;
 
@@ -40,9 +40,9 @@ exports.uploadImage = async (req, res) => {
             filename,
             mime_type,
             originalBuffer,
-            thumbBuffer,
             width || null,
             height || null,
+            thumbBuffer,
             uuidToBin(patient_id),
             patient_name,
             uuidToBin(practitioner_id),
@@ -116,7 +116,7 @@ exports.updateImage = async (req, res) => {
 
         const sql = `
             UPDATE images
-            SET filename = ?, mime_type = ?, image_data = ?, thumb_data = ?, width = ?, height = ?
+            SET filename = ?, mime_type = ?, image_data = ?, width = ?, height = ?, thumb_data = ?
             WHERE image_id = ?
         `;
 
@@ -124,9 +124,9 @@ exports.updateImage = async (req, res) => {
             filename,
             mime_type,
             originalBuffer,
-            thumbBuffer,
             width || null,
             height || null,
+            thumbBuffer,
             uuidToBin(imageId)
         ]);
 
@@ -141,3 +141,53 @@ exports.updateImage = async (req, res) => {
     }
 };
 
+exports.getImagesForDoctor = async (req, res) => {
+    try {
+        const doctorId = req.params.id;
+
+        const userCheckSql = `
+            SELECT user_id, user_type
+            FROM users
+            WHERE user_id = ? AND user_type = 'Doctor'
+        `;
+
+        const [userRows] = await db.execute(userCheckSql, [uuidToBin(doctorId)]);
+
+        if (userRows.length === 0) {
+            return res.status(404).json({
+                success: false,
+                message: "Doctor not found"
+            });
+        }
+
+        const sql = `
+            SELECT 
+                BIN_TO_UUID(image_id) AS image_id,
+                filename,
+                mime_type,
+                width,
+                height,
+                patient_name,
+                creation_date,
+                thumb_data
+            FROM images
+            WHERE practitioner_id = ?
+            ORDER BY creation_date DESC
+        `;
+
+        const [rows] = await db.execute(sql, [uuidToBin(doctorId)]);
+
+        res.json({
+            success: true,
+            count: rows.length,
+            images: rows
+        });
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({
+            success: false,
+            error: err.message
+        });
+    }
+};
