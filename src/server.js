@@ -14,6 +14,11 @@ app.use('/images', routes);
 
 const PORT = process.env.PORT || 8085;
 
+app.get('/healthz', (req, res) => {
+    res.status(200).send('OK');
+});
+
+
 app.listen(PORT, '0.0.0.0', () => {
     console.log(`ImageService running on port ${PORT}`);
 });

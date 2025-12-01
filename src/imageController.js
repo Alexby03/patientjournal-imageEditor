@@ -191,3 +191,26 @@ exports.getImagesForDoctor = async (req, res) => {
         });
     }
 };
+
+exports.deleteImage = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        if (!id) {
+            return res.status(400).json({ success: false, error: "Missing image id" });
+        }
+
+        const sql = `DELETE FROM images WHERE image_id = ?`;
+        const [result] = await db.execute(sql, [uuidToBin(id)]);
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ success: false, error: "Image not found" });
+        }
+
+        res.json({ success: true, message: "Image deleted successfully" });
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ success: false, error: err.message });
+    }
+};

@@ -17,4 +17,7 @@ router.put('/:id', upload.single('image'), controller.updateImage);
 // fetch images for a doctor
 router.get('/practitioner/:id', controller.getImagesForDoctor);
 
+// delete
+router.delete('/:id', controller.deleteImage);
+
 module.exports = router;
