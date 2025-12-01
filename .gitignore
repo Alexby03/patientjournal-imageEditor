@@ -1,0 +1,34 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Testing
+coverage/
+
+# Production
+build/
+dist/
+
+# Environment variables (VIKTIGT: Ladda aldrig upp hemligheter!)
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+logs/
+*.log
+
+# Editor specific files (VS Code, Mac, Windows)
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Docker (om du bygger lokalt och inte vill ladda upp loggar etc)
+docker-compose.override.yml
