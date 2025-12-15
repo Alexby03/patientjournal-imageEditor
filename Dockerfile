@@ -7,6 +7,7 @@ COPY package*.json ./
 RUN npm install --omit=dev
 
 COPY . .
+RUN rm -f .env
 
 EXPOSE 8085
 
